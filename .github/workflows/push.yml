@@ -3,32 +3,35 @@ name: Push
 on: [push]
 
 jobs:
-    build:
-        runs-on: windows-latest
-        steps:
-            - uses: actions/checkout@v4
-            - name: Set up Python
-              uses: actions/setup-python@v4
-              with:
-                python-version: '3.13'
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
 
-            - name: Install dependencies
-              run: |
-                python -m pip install --upgrade pip
-                pip install -r requirements.txt
-                pip install pyinstaller
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.13'
 
-            - name: Setup UPX
-              run: |
-                Invoke-WebRequest -Uri "https://github.com/upx/upx/releases/download/v5.0.2/upx-5.0.2-win64.zip" -OutFile "upx.zip"
-                Expand-Archive -Path "upx.zip" -DestinationPath "C:\Tools\UPX"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-            - name: Build
-              run: |
-                pyinstaller autoclicker.spec --noconfirm --upx-dir C:\Tools\UPX\upx-5.0.2-win64
+      - name: Build
+        uses: nuitka/nuitka-action@main
+        with:
+          nuitka-version: 'main'
+          script-name: 'autoclicker'
+          mode: 'onefile'
+          enable-plugins: tk-inter
+          windows-icon-from-ico: 'autoclicker/res/icon.ico'
+          windows-console-mode: 'disable'
+          include-data-dir: 'autoclicker/res=res'
+          output-file: 'MoonAutoClicker.exe'
 
-            - name: Upload artifact
-              uses: actions/upload-artifact@v4
-              with:
-                name: MoonAutoClicker
-                path: dist
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MoonAutoClicker
+          path: build/MoonAutoClicker.exe
