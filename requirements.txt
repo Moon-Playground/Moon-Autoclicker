@@ -1,0 +1,6 @@
+customtkinter
+pynput
+keyboard
+pyautogui
+tomlkit
+Pillow
