@@ -18,9 +18,14 @@ jobs:
                 pip install -r requirements.txt
                 pip install pyinstaller
 
+            - name: Setup UPX
+              run: |
+                Invoke-WebRequest -Uri "https://github.com/upx/upx/releases/download/v5.0.2/upx-5.0.2-win64.zip" -OutFile "upx.zip"
+                Expand-Archive -Path "upx.zip" -DestinationPath "C:\Tools\UPX"
+
             - name: Build
               run: |
-                pyinstaller autoclicker.spec --noconfirm
+                pyinstaller autoclicker.spec --noconfirm --upx-dir C:\Tools\UPX\upx-5.0.2-win64
 
             - name: Upload artifact
               uses: actions/upload-artifact@v4
